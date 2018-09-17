@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>東海大學USR—青銀共創‧樂齡樂活資訊平台</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="elegant_font/style.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/slider-pro.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/owl.theme.css">
+    <link rel="stylesheet" href="css/owl.transitions.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="elegant_font/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="ShowDetail.js"></script>
+    <script>
+        var Title = {
+            '0101': '2018.04.16 與球共舞',
+            '0102': '2018.04.23 樂齡健康促進',
+            '0103': '2018.04.30 健康專題講座-高齡輔具評估與應用',
+            '0201': '2018.4.18參觀公益CEO文康車',
+            '0301': '2018.01.26參訪北溪社區',
+            '0401': '2017.12.05CEO社區據點創藝競賽',
+            '0402': '2017.12.18永安社區共餐活動',
+            '0501': '2017.10.7高齡教育專題演講-國際高齡自主學習的實施與啟示',
+            '0502': '2018.03.09代間學習課程',
+            '0601': '2017.9.20聖麒食品公司參訪',
+            '0701': '2018.1.5高齡社會設計創新課程-期末社區發表會',
+            '0702': '2018.3.27八福社區場地空間改善現場場勘及會議',
+            '0801': '2018.2與南開科技大學學生合作製作高齡化',
+            '0901': '2018.3月-6月運健學程學生至弘道基金會實習',
+            '1001': '2018.05.01高教深耕USR政策檢討公聽會'
+        }
+        var Memo = {
+            '0101': '健康促進領域',
+            '0102': '健康促進領域',
+            '0103': '健康促進領域',
+            '0201': '青銀行動車',
+            '0301': '志工培育領域',
+            '0401': '共餐服務領域',
+            '0402': '共餐服務領域',
+            '0501': '課程與活動領域',
+            '0502': '課程與活動領域',
+            '0601': '營運管理領域',
+            '0701': '空間設施改善領域',
+            '0702': '空間設施改善領域',
+            '0801': '夥伴學校合作',
+            '0901': '社福團體合作',
+            '1001': '政府機關合作'
+        }
+        var Web = {
+            '101': ''
+        }
+
+        var url = location.href;
+        var id = "";
+        //再來用去尋找網址列中是否有資料傳遞(QueryString)
+        if (url.indexOf('?') != -1) {
+
+            //在此直接將各自的參數資料切割放進ary中
+            var ary = url.split('?')[1].split('&');
+            //下迴圈去搜尋每個資料參數
+            for (i = 0; i <= ary.length - 1; i++) {
+                //如果資料名稱為id的話那就把他取出來
+                if (ary[i].split('=')[0] = 'id')
+                    id = ary[i].split('=')[1];
+            }
+        }
+        function SetDetail() {
+            document.getElementById('img1').alt = Title[id];
+            document.getElementById('img1').src = "images/detail/achievedetail_" + id + "_1.png";
+
+            document.getElementById('img2').alt = Title[id];
+            document.getElementById('img2').src = "images/detail/achievedetail_" + id + "_2.png";
+
+            document.getElementById('img3').alt = Title[id];
+            document.getElementById('img3').src = "images/detail/achievedetail_" + id + "_3.png";
+
+            document.getElementById('title1').innerText = Title[id];
+            document.getElementById("memo").innerText = Memo[id];
+
+            //document.getElementById('weblink').href = PartnerWeb[id];
+            //document.getElementById("weblink").innerText = "網站：" + PartnerWeb[id];
+        }
+    </script>
+</head>
+<body style="background-color: white;">
+    <header>
+        <!-- Navigation Menu start-->
+
+        <nav id="topNav" class="navbar navbar-default main-menu">
+            <a class="navbar-brand page-scroll" href="index.html" style="margin-right:0 !important;"><img src="images/logo/mainlogo.png" alt="東海大學" style="margin-top: 0 !important; height:90px;"></a>
+            <div class="container">
+                <button class="navbar-toggler hidden-md-up pull-right" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+                    ☰
+                </button>
+                <div class="collapse navbar-toggleable-md" id="collapsingNavbar">
+                    <ul class="nav navbar-nav" style="font-family: sans-serif; font-size: 12px;">
+                        <li>
+                            <a target="_self" href="index.html#introduction">USR介紹</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#partner">夥伴介紹</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#news">最新消息</a>
+                        </li>
+
+                        <!--<li>
+                            <a target="_self" href="index.html#event">最新活動</a>
+                        </li>-->
+                        <li class="active">
+                            <a target="_self" href="index.html#achieve">成果與紀錄</a>
+                        </li>
+                        <!--<li>
+                            <a target="_self" href="index.html#board">公告事項</a>
+                        </li>-->
+
+                        <li>
+                            <a target="_self" href="index.html#rule">法規查詢</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#chart">表單下載</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#elderlyarea">東海樂齡專區</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#sourcelink">高齡資源網站連結</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#signup">線上報名</a>
+                        </li>
+                        <li>
+                            <a href="index.html#contact">聯絡我們</a>
+                        </li>
+                        <li>
+                            <a href="AdminLogin.html">管理者登入</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="margin:0;padding:0;border-color:silver;" />
+        </nav>
+    </header>
+    <section class="section-wrapper" style="background-color: silver; padding-top:5em !important;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown" style="background-color:white;height:700px;">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">成果與紀錄</span></h2>
+                    <div class="row">
+                        <label id="title1" style="font-size:4vh;">TITLE</label>
+                        <label id="memo" style="font-size:2vh;display:none;">DEMO</label>
+                    </div>
+                    <div class="row">
+                        <br /><br /><br />
+                        <div class="col-md-4"><img id="img1" width="300px" alt="DEMO" src="images/detail/Demo.png" onerror="javascript: this.style.display='none'" /></div>
+                        <div class="col-md-4"><img id="img2" width="300px" alt="DEMO" src="images/detail/Demo.png" onerror="javascript: this.style.display='none'" /></div>
+                        <div class="col-md-4"><img id="img3" width="300px" alt="DEMO" src="images/detail/Demo.png" onerror="javascript: this.style.display='none'" /></div>
+                    </div>
+                    <script>
+                        SetDetail();
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

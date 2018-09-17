@@ -1,0 +1,1130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <meta name="Author" content="">
+    <title>東海大學USR—青銀共創‧樂齡樂活資訊平台</title>
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="elegant_font/style.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/slider-pro.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/owl.theme.css">
+    <link rel="stylesheet" href="css/owl.transitions.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="elegant_font/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script>
+        function createCode() {
+            code = "";
+            var codeLength = 4;
+            var canvas = document.getElementById('myCanvas');
+            var selectChar = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);//所有候选组成验证码的字符
+
+            for (var i = 0; i < codeLength; i++) {
+                var charIndex = Math.floor(Math.random() * 10);
+                code += selectChar[charIndex];
+            }
+
+            if (canvas) {
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, 70, 47);
+                ctx.font = "27px arial";
+
+                var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                gradient.addColorStop("0", "darkblue");//darkblue
+                gradient.addColorStop("1", "blue");
+
+                ctx.strokeStyle = gradient;
+                ctx.strokeText(code, 5, 20);
+                document.getElementById('anscode').value = code;
+                document.getElementById('setcode').value = '';
+            }
+        }
+
+        function checkcode() {
+            var name = document.getElementById('name');
+            var sex = document.getElementById('sex');
+            var tel = document.getElementById('tel');
+            var email = document.getElementById('email');
+            var message = document.getElementById('message');
+            var anscode = document.getElementById('anscode');
+            var setcode = document.getElementById('setcode');
+            var error = '';
+            if (name.value == '') {
+                error += '未填寫姓名！\n';
+            }
+            if (sex.selectedIndex == 0) {
+                error += '未選擇性別！\n';
+            }
+            if (tel.value == '') {
+                error += '未填寫電話！\n';
+            }
+            if (email.value == '') {
+                error += '未填寫電子郵件！\n';
+            }
+            if (message.value == '') {
+                error += '未填寫問題或建議！\n';
+            }
+            if (anscode.value != setcode.value) {
+                error += '驗證碼錯誤！\n';
+            }
+            if (error != '') {
+                alert(error);
+            } else {
+                var strmessage = message.value.replace(/\n/g, "<br/>")
+                var date = new Date();
+                var jsontxt = "{\"name\":\"" + name.value + "\",\"sex\":\"" + sex.value + "\",\"tel\":\"" + tel.value + "\",\"email\":\"" + email.value + "\",\"message\":\"" + strmessage + "\",\"date\":\"" + date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() + "\"}"
+                name.value = '';
+                sex.selectedIndex = 0;
+                tel.value = '';
+                email.value = '';
+                message.value = '';
+                $.ajax({
+                    type: "POST",
+                    url: "writtingjson.php",
+                    data: { jsontxt: jsontxt, filename: "contactdata" }
+                });
+
+                //$.ajax({
+                //    type: "POST",
+                //    url: "writtingjson.php",
+                //    data: { jsontxt: jsontxt, filename: "contactdata" },
+                //    async: false,
+                //    success: function (result) {
+                //        $("#TEXT").html(result);
+                //    },
+                //    error: function () {
+                //    }
+                //})
+            }
+            createCode();
+        }
+        function getjsondata() {
+            $.getJSON("jsondata/eventdata.json", function (json) {
+                var strHtml = "";
+                $.each(json, function (infoIndex, info) {
+                    strHtml += "<div class='col-md-3'><a target='_blank' href='" + info["eventurl"] + "' style='font-size:4vh;'>" + info["eventname"] + "</a><hr></div>"
+                })
+                document.getElementById('eventdatajson').innerHTML = strHtml;
+            });
+        }
+
+        function slideLine(divid, stf, delay, speed, h) {
+            //取得id
+            var slidediv = document.getElementById(divid);
+            //預設值 delay:幾毫秒滾動一次(1000毫秒=1秒) speed:數字越小越快，h:高度
+            var delay = delay || 1000, speed = speed || 20, h = h || 20;
+            var tid = null, pause = false;
+            var s = function () { tid = setInterval(slide, speed); }
+            //主要動作的地方
+            var slide = function () {
+                //當滑鼠移到上面的時候就會暫停
+                if (pause) return;
+                //滾動條往下滾動 數字越大會越快但是看起來越不連貫，所以這邊用1
+                slidediv.scrollTop += 1;
+                //滾動到一個高度(h)的時候就停止
+                if (slidediv.scrollTop % h <= 0) {
+                    //跟setInterval搭配使用的
+                    clearInterval(tid);
+                    //將剛剛滾動上去的前一項加回到整列的最後一項
+                    //slidediv.appendChild(slidediv.getElementsByTagName(stf)[0]);
+                    //再重設滾動條到最上面
+                    slidediv.scrollTop = 0;
+                    //延遲多久再執行一次
+                    setTimeout(s, delay);
+                }
+            }
+            //滑鼠移上去會暫停 移走會繼續動
+            slidediv.onmouseover = function () { pause = true; }
+            slidediv.onmouseout = function () { pause = false; }
+            //起始的地方，沒有這個就不會動囉
+            setTimeout(s, delay);
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Header End -->
+    <header>
+        <!-- Navigation Menu start-->
+        <nav id="topNav" class="navbar navbar-default main-menu" style="background-color:white;">
+            <!---->
+            <!--main-menu-->
+            <a class="navbar-brand page-scroll" href="#slider" style="margin-right:0 !important;"><img src="images/logo/mainlogo.png" alt="東海大學" style="margin-top: 0 !important; height:90px;"></a>
+            <div class="container">
+                <button class="navbar-toggler hidden-md-up pull-right" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+                    ☰
+                </button>
+                <div class="collapse navbar-toggleable-md" id="collapsingNavbar">
+
+                    <ul id="menulist" class="nav navbar-nav" style="font-family: sans-serif; font-size: 12px; font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">
+                        <li class="active">
+                            <a href="#introduction">USR介紹</a>
+                        </li>
+                        <li>
+                            <a href="#partner">夥伴團隊</a>
+                        </li>
+                        <li>
+                            <a href="#news">最新消息</a>
+                        </li>
+                        <li>
+                            <a href="#signup">最新活動與報名</a>
+                        </li>
+                        <!--<li>
+                            <a href="#event">最新活動</a>
+                        </li>-->
+                        <li>
+                            <a href="#achieve">成果與紀錄</a>
+                        </li>
+                        <!--<li>
+                            <a href="#board">公告事項</a>
+                        </li>-->
+                        <!--<li>
+                            <a href="#rule">法規查詢</a>
+                        </li>
+                        <li>
+                            <a href="#chart">表單下載</a>
+                        </li>-->
+                        <li>
+                            <a href="#elderlyarea">東海樂齡專區</a>
+                            <!--<a href="#qa">常見問題</a>-->
+                        </li>
+                        <!--<li>
+                            <a href="#sourcelink">高齡資源網站連結</a>
+                            <a href="#login">線上登錄</a>
+                        </li>-->
+                        <li>
+                            <a href="#contact">聯絡我們</a>
+                        </li>
+                        <li>
+                            <a href="AdminLogin.html">管理者登入</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="margin:0;padding:0;border-color:silver;" />
+        </nav>
+        <input id='jsontxt' type='hidden' value='<?php echo $jsontxt1;?>' />
+
+    </header>
+    <!-- Header End -->
+
+
+    <section class="slider-pro slider" id="introduction">
+        <div class="sp-slides">
+
+            <!-- Slides -->
+            <div class="sp-slide main-slides">
+                <div class="img-overlay"></div>
+
+                <img class="sp-image" src="images/slider/slider-img-1.jpg" alt="Slider 1" />
+
+                <h1 class="sp-layer slider-text-big"
+                    data-position="center" data-show-transition="left" data-hide-transition="right" data-show-delay="1500" data-hide-delay="200">
+                    <span class="highlight-texts" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 7.5vh !important;">大自然是生活的養分</span>
+                </h1>
+
+                <p class="sp-layer"
+                   data-position="center" data-vertical="15%" data-show-delay="2000" data-hide-delay="200" data-show-transition="left" data-hide-transition="right" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 2.5vh !important;">
+                    自然的生活才是享受人生
+                </p>
+            </div>
+            <!-- Slides End -->
+            <!-- Slides -->
+            <div class="sp-slide main-slides">
+                <div class="img-overlay"></div>
+                <img class="sp-image" src="images/slider/slider-img-2.jpg" alt="Slider 2" />
+
+                <h1 class="sp-layer slider-text-big"
+                    data-position="center" data-show-transition="left" data-hide-transition="right" data-show-delay="1500" data-hide-delay="200">
+                    <span class="highlight-texts" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 7.5vh !important;">健康的老年如同壯年</span>
+                </h1>
+
+                <p class="sp-layer"
+                   data-position="center" data-vertical="15%" data-show-delay="2000" data-hide-delay="200" data-show-transition="left" data-hide-transition="right" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 2.5vh !important;">定時定量的活動</p>
+            </div>
+            <!-- Slides End -->
+            <!-- Slides -->
+            <div class="sp-slide main-slides">
+                <div class="img-overlay"></div>
+
+                <img class="sp-image" src="images/slider/slider-img-3.jpg" alt="Slider 3" />
+
+                <h1 class="sp-layer slider-text-big"
+                    data-position="center" data-show-transition="left" data-hide-transition="right" data-show-delay="1500" data-hide-delay="200">
+                    <span class="highlight-texts" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 7.5vh !important;">陽光、歡笑、照顧</span>
+                </h1>
+
+                <p class="sp-layer"
+                   data-position="center" data-vertical="15%" data-show-delay="2000" data-hide-delay="200" data-show-transition="left" data-hide-transition="right" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 2.5vh !important;">啟動第二人生</p>
+            </div>
+            <!-- Slides End -->
+
+        </div>
+    </section>
+    <!-- Main Slider End -->
+    <div id="content12" data-section="content-12" class="data-section" style=" padding-top: 3.5em !important; padding-bottom: 3.5em !important;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 " style="text-align:center;">
+                    <div id="contentscroll" class="content-center">
+                        <h3 style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 3.5vh !important;">USR介紹</h3>
+                        <p id="contenttext" style="text-align:left;font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 2.5vh !important;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;為強化大專校院與區域連結合作，實踐大學社會責任，培育對在地發展能創造價值的大學生，教育部自106年啟動「大<br />
+                            學社會責任實踐計畫」，引導夥伴學校師生組成計畫與執行團隊，在區域發展上扮演關鍵的地方智庫角色，主動發掘在地需<br />
+                            求、解決問題，透過在地優勢分工合作，協助區域整合，帶動中小企業及社區文化的創新發展；藉由學習的過程，也讓大學<br />
+                            生感受到「被社區需要」，凝聚對區域發展的認同。本計畫未來需中央部會、地方政府、產業聚落公協會、社區團體、大專<br />
+                            校院共同合作，創造符合在地城鄉、產業及文化發展的創新價值。<br /><br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;「一個偉大的城市應該要有一所偉大的大學！」，這句話道出了大專校院的重要性。臺灣目前有158所大專校院，大約<br />
+                            123萬名大學生，這些學生是未來社會的中堅份子，也是社會進歩的原動力來源，所以大專校院與社會的結合對於在地發展<br />
+                            顯得格外重要。在教育資源的分配中，大專校院更是獲得政府關注及許多投入，因此除了在自己專業領域持續研究創新外，<br />
+                            更應該主動積極和社區、社會、產業結合，將知識傳遞給社會大眾，帶動所在地區繁榮與發展，以實踐大學社會責任<br />
+                            （University Social Responsibility, USR） ，讓大專校院走出學術象牙塔，讓人民可以更親近專業知識，促進社區、產<br />
+                            業發展和社會進步；所以藉由本次計畫，使學校走出校園，瞭解社會變遷和產業變動，攜手社區(社會)投入在地關懷、人才<br />
+                            培育、環境保護等，擴大公民議題參與，增進學校和人民互動與對話，減少資訊落差。此外，透過大學社會責任計畫實踐過<br />
+                            程，讓學校發展屬於自己校務特色，增加競爭優勢、創新力，培養跨領域，並能解決未來30年社會問題之新人才，促進高等<br />
+                            教育轉型。<br /><br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;自106年啟動「大學社會責任實踐」計畫，鼓勵學校提出「大學社會責任實踐計畫」（USR計畫），推動各大專校院實<br />
+                            踐社會責任。本計畫採試辦期及執行期兩階段的推動作法。<br /><br />
+                            計畫四大核心目標：<br />
+                            一、強化區域產學鏈結，協助在地產業發展與升級：為帶動在地產業創新發展與技術升級，透過區域凝聚共識，由學校針對<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在地發展及產業需求議題進行盤點，研提可行實踐方案，期能對區域發展能產生實質貢獻，並可提升在地價值。<br />
+                            二、連結區域學校資源，協助城鄉教育發展：由學校主動積極的連結區域學校協助發展、縮短城鄉差距並能帶動各地區的繁<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;榮與發展。透過大學深入引導協助在地中小學進行教學翻轉，以培育學生「做中學」的解決問題能力，並透過學校與產<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;業互動的經驗，更貼近產業的需求，培育學生具備實踐及行動的能力。<br />
+                            三、整合部會與地方政府資源，挹注在地發展：鼓勵大學師生參與社會創新實踐，藉由教師發掘及帶動學生解決在地議題，<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;讓學生能瞭解在地產業的隱形冠軍，並運用所學去創造產業的價值，改變在地居民對於大學生的觀感增加學生對地區之<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;認同感並創造價值。<br />
+                            四、落實大學社會責任，推動師生社會創新：透過大學生實地探尋及建構區域發展特色與區域產業人才及研發供需調研及對<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接機制，以培育產業所需實務人才，期可發揮促進區域學校學生連結在地就業，以提升在地就業率的效益。<br /><br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在USR計畫中，東海大學提出四件計畫。其中「青銀共創、樂齡樂活」計畫，強調透過師生的參與協助，在以社區照顧<br />
+                            體系下，進一步發展出台中市西屯區的優質高齡支持系統，該計畫的方向與社會永續面向下「社區營造、高齡福祉」高度相<br />
+                            關。首先，配合校務發展計畫的推動，本校已於105年成立「樂齡生活與科技創新中心」(校級中心)，整合校內跨領域教學<br />
+                            與研究能量，推動樂齡長照相關主題的研究，透過此一中心未來能更有效的整合校內外資源推動此一計畫。另外，參與教師<br />
+                            團隊過去多數參與了民國101-103執行教育部SHS科學與人文跨科際人才培育計畫--「高齡化社會與產業」課程模組計畫，<br />
+                            累積了相當的經驗，該計畫的核心精神就是在於推動問題解決導向的跨領域課程與創新學習模式，也在課程推動過程中與台<br />
+                            中地區在地社區與相關組織有高度的互動，深入了解台中在地高齡長照的需求。另外，配合本次計畫的推動，該計畫團隊也<br />
+                            陸續與西屯區A-B-C級7個單位進行訪問，進一步了解西屯在地未來推動長照2.0個各項關鍵問題。為了能夠更有效的引入外<br />
+                            部資源，計畫團隊也陸續拜訪了各個可能的合作單位與學校，並根據各自的資源能力進行分工。另外，由本校支持推動之<br />
+                            GREEnS計畫中「建構優質的長青生活品質與環境之研究」，以「在地老化」為核心概念，該計畫本校共投入4000 萬元，<br />
+                            累積了相當多質化與量化的成果，這些相關研究計畫的投入經驗，加上未來本校樂齡生活與科技創新中心的統整運作，在高<br />
+                            齡長照的議題中，本校已經做好準備，完成計畫的目標並透過在地實踐來落實社會責任。
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <script>
+            //五個屬性各別是：外面div的id名稱、包在裡面的標籤類型,延遲毫秒數、速度、高度
+            slideLine('contentscroll', 'div', 1000, 50, 720);
+        </script>
+    </div> <!-- /#content12 -->
+    <section id="partner" class="section-wrapper" style="background-color: white; padding-top:7.5em !important;">
+        <div class="container">
+            <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown" style="text-align:left;">
+                <div class="row" style="text-align:center;">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 6vh !important;">夥伴介紹</span></h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row" style="font-family:微軟正黑體; font-size: 4.5vh; color:black; font-weight:bold;"><br /><br />大專院校<hr style="border-color:silver; width:96%;" /></div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=101" target="_self"><img alt="中臺科技大學" width="80px" src="images/logo/logo_101.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=101" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">中臺科技大學</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=102" target="_self"><img alt="弘光科技大學" width="80px" src="images/logo/logo_102.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=102" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">弘光科技大學</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=103" target="_self"><img alt="南開科技大學" width="80px" src="images/logo/logo_103.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=103" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">南開科技大學</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=104" target="_self"><img alt="國立彰化師範大學" width="80px" src="images/logo/logo_104.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=104" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">國立彰化師範大學</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=105" target="_self"><img alt="國立台灣體育運動大學" width="80px" src="images/logo/logo_105.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=105" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">國立台灣體育運動大學</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=106" target="_self"><img alt="逢甲大學" width="80px" src="images/logo/logo_106.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=106" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">逢甲大學</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=107" target="_self"><img alt="朝陽科技大學" width="80px" src="images/logo/logo_107.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=107" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">朝陽科技大學</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=108" target="_self"><img alt="靜宜大學" width="80px" src="images/logo/logo_108.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=108" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">靜宜大學</a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row" style="font-family:微軟正黑體; font-size: 4.5vh; color:black; font-weight:bold;"><br /><br />企業組織<hr style="border-color:silver; width:96%;" /></div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=201" target="_self"><img alt="中化銀髮事業" width="80px" src="images/logo/logo_201.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=201" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">中化銀髮事業</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=202" target="_self"><img alt="華碩" width="80px" src="images/logo/logo_202.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=202" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">華碩</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=203" target="_self"><img alt="臺機電" width="80px" src="images/logo/logo_203.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=203" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺機電</a></div>
+                        </div>
+                        <br /><br />
+                        <div class="row" style="font-family:微軟正黑體; font-size: 4.5vh; color:black; font-weight:bold;">醫療單位<hr style="border-color:silver; width:96%;" /></div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=301" target="_self"><img alt="臺中榮民總醫院" width="80px" src="images/logo/logo_301.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=301" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中榮民總醫院</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=302" target="_self"><img alt="澄清醫院中港院區" width="80px" src="images/logo/logo_302.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=302" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">澄清醫院中港院區</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=303" target="_self"><img alt="彰化基督教醫院" width="80px" src="images/logo/logo_303.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=303" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">彰化基督教醫院</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=304" target="_self"><img alt="彰化秀傳紀念醫院" width="80px" src="images/logo/logo_304.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=304" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">彰化秀傳紀念醫院</a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row" style="font-family:微軟正黑體; font-size: 4.5vh; color:black; font-weight:bold;"><br /><br />社福團體<hr style="border-color:silver; width:96%;" /></div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=401" target="_self"><img alt="弘道老人福利基金會" width="80px" src="images/logo/logo_401.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=401" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">弘道老人福利基金會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=402" target="_self"><img alt="社團法人台灣工藝CEO協會" width="80px" src="images/logo/logo_402.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=402" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">社團法人台灣工藝CEO協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=403" target="_self"><img alt="紅十字會台中支會" width="80px" src="images/logo/logo_403.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=403" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">紅十字會台中支會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=404" target="_self"><img alt="財團法人天主教曉明社會福利基金會" width="80px" src="images/logo/logo_404.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=404" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">財團法人天主教曉明社會福利基金會</a></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="font-family:微軟正黑體; font-size: 4.5vh; color:black; font-weight:bold;"><br /><br />社區組織<hr style="border-color:silver;" /></div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=501" target="_self"><img alt="社團法人臺中市惠來關懷服務協會-惠來據點" width="80px" src="images/logo/logo_501.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=501" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">社團法人臺中市惠來關懷服務協會-惠來據點</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=502" target="_self"><img alt="社團法人臺灣愛鄰社區服務協會" width="80px" src="images/logo/logo_502.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=502" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">社團法人臺灣愛鄰社區服務協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=503" target="_self"><img alt="財團法人中華社會福利基金會" width="80px" src="images/logo/logo_503.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=503" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">財團法人中華社會福利基金會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=504" target="_self"><img alt="惠來社區發展協會" width="80px" src="images/logo/logo_504.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=504" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">惠來社區發展協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=505" target="_self"><img alt="敬德基金會附設護理之家" width="80px" src="images/logo/logo_505.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=505" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">敬德基金會附設護理之家</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=506" target="_self"><img alt="福和社區關懷據點" width="80px" src="images/logo/logo_506.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=506" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">福和社區關懷據點</a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=507" target="_self"><img alt="福智慈善基金會-台中學苑" width="80px" src="images/logo/logo_507.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=507" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">福智慈善基金會-台中學苑</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=508" target="_self"><img alt="福雅社區發展協會" width="80px" src="images/logo/logo_508.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=508" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">福雅社區發展協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=509" target="_self"><img alt="臺中市西大墩文化協會" width="80px" src="images/logo/logo_509.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=509" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市西大墩文化協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=510" target="_self"><img alt="臺中市西屯區永安社區發展協會" width="80px" src="images/logo/logo_510.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=510" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市西屯區永安社區發展協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=511" target="_self"><img alt="臺中市西屯區何仁社區發展協會" width="80px" src="images/logo/logo_511.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=511" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市西屯區何仁社區發展協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=512" target="_self"><img alt="臺中市西屯區何德社區發展協會" width="80px" src="images/logo/logo_512.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=512" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市西屯區何德社區發展協會</a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=513" target="_self"><img alt="臺中市西屯區福瑞社區發展協會" width="80px" src="images/logo/logo_513.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=513" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市西屯區福瑞社區發展協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=514" target="_self"><img alt="臺中市何成長青協會" width="80px" src="images/logo/logo_514.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=514" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市何成長青協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=515" target="_self"><img alt="臺中市何明社區發展協會" width="80px" src="images/logo/logo_515.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=515" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市何明社區發展協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=516" target="_self"><img alt="臺中市東榮八福社區關懷協會" width="80px" src="images/logo/logo_516.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=516" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市東榮八福社區關懷協會</a></div>
+                        </div>
+                        <div class="row" style="background-color:white;height:110px;">
+                            <div class="col-md-3"><a href="PartnerDetail.html?id=517" target="_self"><img alt="臺中市龍井區東海社區發展協會" width="80px" src="images/logo/logo_517.png" /></a></div>
+                            <div class="col-md-9"><a href="PartnerDetail.html?id=517" target="_self" style="font-family:微軟正黑體; font-size: 3.5vh;">臺中市龍井區東海社區發展協會</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="news" class="about-sec section-wrapper description" style="background-color:white;">
+        <div class="gallery" id="gallery">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                        <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 6vh !important;">最新消息</span></h2>
+                    </div>
+                    <div class="top-gallery">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                    <div style="padding:30px 40px 40px;"><a href="NewsDetail.html?id=001" target="_self"><img alt="/" height="200px" class="img-responsive" src="images/logo/news_001.png" /></a></div>
+                                    <a href="NewsDetail.html?id=001" target="_self" style="font-size:4vh;">2018.05.18</a>
+                                    <div class="textbox">
+                                        <h4><a href="NewsDetail.html?id=001" target="_self" style="color:white">2018.05.18中華基金會揭牌儀式</a></h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                    <div style="padding:30px 40px 40px;"><a href="NewsDetail.html?id=002" target="_self"><img alt="/" height="200px" class="img-responsive" src="images/logo/news_002.png" /></a></div>
+                                    <a href="NewsDetail.html?id=002" target="_self" style="font-size:4vh;">2018.06.16、2018.06.23</a>
+                                    <div class="textbox">
+                                        <h4><a href="NewsDetail.html?id=002" target="_self" style="color:white">2018.06.16、2018.06.23教育研究所-高齡專題演講</a></h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                    <div style="padding:30px 40px 40px;"><a href="NewsDetail.html?id=003" target="_self"><img alt="/" height="200px" class="img-responsive" src="images/logo/news_003.png" /></a></div>
+                                    <a href="NewsDetail.html?id=003" target="_self" style="font-size:4vh;">2018.06.23</a>
+                                    <div class="textbox">
+                                        <h4><a href="NewsDetail.html?id=003" target="_self" style="color:white">2018.06.23福瑞社區結業式活動</a></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br /><br />
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                    <div style="padding:30px 40px 40px;"><a href="NewsDetail.html?id=004" target="_self"><img alt="/" height="200px" class="img-responsive" src="images/logo/news_004.png" /></a></div>
+                                    <a href="NewsDetail.html?id=004" target="_self" style="font-size:4vh;">2018.07.03</a>
+                                    <div class="textbox">
+                                        <h4><a href="NewsDetail.html?id=004" target="_self" style="color:white">2018.07.03銀髮族營養與廚藝講座</a></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="newsdatajson">
+                    <script>
+                        getjsondata();
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="signup" class="clients-section" style="background-color: white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">線上報名</span></h2>
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1" style="font-size:3.5vh;">
+                        <div id="eventdatajson"></div>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--<section id="event" class="about-sec section-wrapper description" style="background-color:#D5E7F0">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">最新活動</span></h2>
+                </div>
+
+            </div>
+        </div>
+    </section>-->
+
+    <section id="achieve" class="about-sec section-wrapper description" style="background-color:white">
+        <div class="container">
+            <div id="achievedetail1">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                        <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 6vh !important;">成果與紀錄</span></h2>
+                    </div>
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0100" aria-expanded="false" aria-controls="achievedetail0100"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0100.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0100" aria-expanded="false" aria-controls="achievedetail0100" style="font-size:4vh;">要活就要動</a>
+                                <div class="textbox">
+                                    <h4><a data-toggle="collapse" role="button" href="#achievedetail0100" aria-expanded="false" aria-controls="achievedetail0100" style="color:white">要活就要動</a></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0200" aria-expanded="false" aria-controls="achievedetail0200"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0200.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0200" aria-expanded="false" aria-controls="achievedetail0200" style="font-size:4vh;">快樂行</a>
+                                <div class="textbox">
+                                    <h4><a data-toggle="collapse" role="button" href="#achievedetail0200" aria-expanded="false" aria-controls="achievedetail0200" style="color:white">快樂行</a></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0300" aria-expanded="false" aria-controls="achievedetail0300"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0300.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0300" aria-expanded="false" aria-controls="achievedetail0300" style="font-size:4vh;">作伙走</a>
+                                <div class="textbox">
+                                    <h4><a data-toggle="collapse" role="button" href="#achievedetail0300" aria-expanded="false" aria-controls="achievedetail0300" style="color:white">作伙走</a></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <div class="collapse" id="achievedetail0100" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />健康促進領域<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0101" target="_self"><img alt="2018.04.16 與球共舞" height="200px" src="images/logo/achieve_0101.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0101" target="_self" style="font-size:4vh">2018.04.16</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0101" target="_self" style="color:white">2018.04.16 與球共舞</a></h4></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0102" target="_self"><img alt="2018.04.23 樂齡健康促進" height="200px" src="images/logo/achieve_0102.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0102" target="_self" style="font-size:4vh">2018.04.23</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0102" target="_self" style="color:white">2018.04.23 樂齡健康促進</a></h4></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0103" target="_self"><img alt="2018.04.30 健康專題講座-高齡輔具評估與應用" height="200px" src="images/logo/achieve_0103.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0103" target="_self" style="font-size:4vh">2018.04.30</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0103" target="_self" style="color:white">2018.04.30 健康專題講座-高齡輔具評估與應用</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="achievedetail0200" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />青銀行動車<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0201" target="_self"><img alt="2018.04.18 參觀公益CEO文康車" height="200px" src="images/logo/achieve_0201.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0201" target="_self" style="font-size:4vh">2018.04.18</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0201" target="_self" style="color:white">2018.04.18 參觀公益CEO文康車</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="achievedetail0300" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />志工培育領域<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0301" target="_self"><img alt="2018.01.26 參訪北溪社區" height="200px" src="images/logo/achieve_0301.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0301" target="_self" style="font-size:4vh">2018.01.26</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0301" target="_self" style="color:white">2018.01.26 參訪北溪社區</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0400" aria-expanded="false" aria-controls="achievedetail0400"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0400.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0400" aria-expanded="false" aria-controls="achievedetail0400" style="font-size:4vh;">食在好吃</a>
+                                <div class="textbox">
+                                    <h4><a data-toggle="collapse" role="button" href="#achievedetail0400" aria-expanded="false" aria-controls="achievedetail0400" style="color:white">食在好吃</a></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0500" aria-expanded="false" aria-controls="achievedetail0500"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0500.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0500" aria-expanded="false" aria-controls="achievedetail0500" style="font-size:4vh;">活到老學到老</a>
+                                <div class="textbox">
+                                    <h4><a data-toggle="collapse" role="button" href="#achievedetail0500" aria-expanded="false" aria-controls="achievedetail0500" style="color:white">活到老學到老</a></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0600" aria-expanded="false" aria-controls="achievedetail0600"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0600.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0600" aria-expanded="false" aria-controls="achievedetail0600" style="font-size:4vh;">與企業同行</a>
+                                <div class="textbox">
+                                    <h4><a data-toggle="collapse" role="button" href="#achievedetail0600" aria-expanded="false" aria-controls="achievedetail0600" style="color:white">與企業同行</a></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <div class="collapse" id="achievedetail0400" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />共餐服務領域<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0401" target="_self"><img alt="2017.12.05 CEO社區據點創藝競賽" height="200px" src="images/logo/achieve_0401.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0401" target="_self" style="font-size:4vh">2017.12.05</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0401" target="_self" style="color:white">2017.12.05 CEO社區據點創藝競賽</a></h4></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0402" target="_self"><img alt="2017.12.18 永安社區共餐活動" height="200px" src="images/logo/achieve_0402.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0402" target="_self" style="font-size:4vh">2017.12.18</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0402" target="_self" style="color:white">2017.12.18 永安社區共餐活動</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="achievedetail0500" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />課程與活動領域<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0501" target="_self"><img alt="2017.10.07高齡教育專題演講-國際高齡自主學習的實施與啟示" height="200px" src="images/logo/achieve_0501.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0501" target="_self" style="font-size:4vh">2017.10.07</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0501" target="_self" style="color:white">2017.10.07高齡教育專題演講-國際高齡自主學習的實施與啟示</a></h4></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0502" target="_self"><img alt="2018.03.09代間學習課程" height="200px" src="images/logo/achieve_0502.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0502" target="_self" style="font-size:4vh">2018.03.09</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0502" target="_self" style="color:white">2018.03.09代間學習課程</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="achievedetail0600" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />營運管理領域<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0601" target="_self"><img alt="2017.09.20聖麒食品公司參訪" height="200px" src="images/logo/achieve_0601.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0601" target="_self" style="font-size:4vh">2017.09.20</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0601" target="_self" style="color:white">2017.09.20聖麒食品公司參訪</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0700" aria-expanded="false" aria-controls="achievedetail0700"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0700.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0700" aria-expanded="false" aria-controls="achievedetail0700" style="font-size:4vh;">全能大改造</a>
+                                <div class="textbox"><h4><a data-toggle="collapse" role="button" href="#achievedetail0700" aria-expanded="false" aria-controls="achievedetail0700" style="color:white">全能大改造</a></h4></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0800" aria-expanded="false" aria-controls="achievedetail0800"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0800.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0800" aria-expanded="false" aria-controls="achievedetail0800" style="font-size:4vh;">多動腦不會老</a>
+                                <div class="textbox"><h4><a data-toggle="collapse" role="button" href="#achievedetail0800" aria-expanded="false" aria-controls="achievedetail0800" style="color:white">多動腦不會老</a></h4></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail0900" aria-expanded="false" aria-controls="achievedetail0900"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_0900.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail0900" aria-expanded="false" aria-controls="achievedetail0900" style="font-size:4vh;">關懷你我他</a>
+                                <div class="textbox"><h4><a data-toggle="collapse" role="button" href="#achievedetail0900" aria-expanded="false" aria-controls="achievedetail0900" style="color:white">關懷你我他</a></h4></div>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <div class="collapse" id="achievedetail0700" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />空間設施改善領域<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0701" target="_self"><img alt="2018.01.05高齡社會設計創新課程-期末社區發表會" height="200px" src="images/logo/achieve_0701.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0701" target="_self" style="font-size:4vh">2018.01.05</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0701" target="_self" style="color:white">2018.01.05高齡社會設計創新課程-期末社區發表會</a></h4></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0702" target="_self"><img alt="2018.03.27八福社區場地空間改善現場場勘及會議" height="200px" src="images/logo/achieve_0702.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0702" target="_self" style="font-size:4vh">2018.03.27</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0702" target="_self" style="color:white">2018.03.27八福社區場地空間改善現場場勘及會議</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="achievedetail0800" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />夥伴學校合作<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0801" target="_self"><img alt="2018.02與南開科技大學學生合作製作高齡化" height="200px" src="images/logo/achieve_0801.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0801" target="_self" style="font-size:4vh">2018.02</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0801" target="_self" style="color:white">2018.02與南開科技大學學生合作製作高齡化</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="achievedetail0900" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />社福團體合作<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=0901" target="_self"><img alt="2018.03-06運健學程學生至弘道基金會實習" height="200px" src="images/logo/achieve_0901.png" /></a></div>
+                                <a href="AchieveDetail.html?id=0901" target="_self" style="font-size:4vh">2018.03-06</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=0901" target="_self" style="color:white">2018.03-06運健學程學生至弘道基金會實習</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a data-toggle="collapse" role="button" href="#achievedetail1000" aria-expanded="false" aria-controls="achievedetail1000"><img alt="/" height="200px" class="img-responsive" src="images/logo/achieve_1000.png" /></a></div>
+                                <a data-toggle="collapse" role="button" href="#achievedetail1000" aria-expanded="false" aria-controls="achievedetail1000" style="font-size:4vh;">政府人民一起來</a>
+                                <div class="textbox"><h4><a data-toggle="collapse" role="button" href="#achievedetail1000" aria-expanded="false" aria-controls="achievedetail1000" style="color:white">政府人民一起來</a></h4></div>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <div class="collapse" id="achievedetail1000" data-parent="#achievedetail1">
+                    <div class="row" style="text-align:center; font-family:微軟正黑體; font-size: 4vh; color:black; font-weight:bold;"><br /><br />政府機關合作<br /><br /></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="gallery-grid gallery1" style="text-align:center;background-color:#EEEEEE;">
+                                <div style="padding:30px 40px 40px;"><a href="AchieveDetail.html?id=1001" target="_self"><img alt="2018.05.01高教深耕USR政策檢討公聽會" height="200px" src="images/logo/achieve_1001.png" /></a></div>
+                                <a href="AchieveDetail.html?id=1001" target="_self" style="font-size:4vh">2018.05.01</a>
+                                <div class="textbox"><h4><a href="AchieveDetail.html?id=1001" target="_self" style="color:white">2018.05.01高教深耕USR政策檢討公聽會</a></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--<section id="board" class="bgSection portfolio-section" style="background-color:#FFE6FF">
+        <div class="container">
+            <div class="row">
+
+
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">公告事項</span></h2>
+
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1"></p>
+                </div>
+
+            </div>
+        </div>
+        <br><br><br>
+    </section>-->
+
+    <!--<section id="rule" class="info-section" style="background-color:white">
+        <div class="container text-xs-center">
+
+            <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">法規查詢</span></h2>
+
+                <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                    <img src="images/logo_002.png" style="max-height: 7.5vh;" alt="" />
+                    <br><br>
+                    <span style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 3.5vh !important;">衛生福利部長照政策專區</span>
+                    <br><br>
+                    <span style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 2.5vh !important;"><a href="https://1966.gov.tw/LTC/mp-201.html">https://1966.gov.tw/LTC/mp-201.html</a></span>
+                </p>
+            </div>
+        </div>
+    </section>-->
+
+    <!--<section id="chart" class="pricing-section" style="background-color:white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">表單下載</span></h2>
+
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                        <img src="images/logo_001.png" style="max-height: 7.5vh;" alt="" />
+                        <br><br>
+                        <span style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 3.5vh !important;">長照申請書</span>
+                        <br><br>
+                        <span style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 3vh !important;">出處網站：台中市政府照顧管理中心</span>
+                        <br><br>
+                        <span style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-size: 2.5vh !important;"><a href="http://ltcc2.health.taichung.gov.tw/files/11-1000-86.php">http://ltcc2.health.taichung.gov.tw/files/11-1000-86.php</a></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>-->
+
+    <section id="elderlyarea" class="bgSection teams-section" style="background-color: white; padding-top:100px;">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">東海樂齡專區</span></h2>
+
+                    <!--<p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1"></p>-->
+                </div>
+                <div class="row">
+                    <div class="col-md-4" style="background-color:white;">
+                        <label style="font-size:4vh;">粉絲專頁</label><br />
+                        <img alt="粉絲專頁" height="300px" src="images/logo/elderlyarea_001.png" /><br /><br />
+                        <a href="https://www.facebook.com/thuusr/" target="_self" style="font-size:3vh">東海大學USR粉絲專頁</a>
+                    </div>
+                    <div class="col-md-4" style="background-color:white;">
+                        <label style="font-size:4vh;">教材</label><br />
+                        <img alt="教材" height="300px" src="images/logo/elderlyarea_002.png" /><br /><br />
+                        <a href="" target="_self" style="font-size:3vh"></a><br />
+                    </div>
+                    <div class="col-md-4" style="background-color:white;">
+                        <label style="font-size:4vh;">影音</label><br />
+                        <img alt="影音" height="300px" src="images/logo/elderlyarea_003.png" /><br /><br />
+                        <a href="https://www.youtube.com/watch?v=w5Wc8pmeISc&feature=youtu.be" target="_blank" style="font-size:3vh">樂齡樂學</a><br />
+                    </div>
+                </div>
+                <br /><br />
+                <div class="row">
+                    <div class="col-md-4" style="background-color:white;">
+                        <label style="font-size:4vh;">食譜</label><br />
+                        <img alt="食譜" height="300px" src="images/logo/elderlyarea_004.png" /><br /><br />
+                        <a href="" target="_self" style="font-size:3vh"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    </section>
+
+    <!--<section id="sourcelink" class="clients-section" style="background-color:white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">高齡資源網站連結</span></h2>
+                    <div class="col-md-4">
+                        <label style="font-size:4vh;">健康</label><br />
+                        <img alt="健康" height="300px" src="images/logo/sourcelink_001.png" /><br /><br />
+                        <a href="http://www.commonhealth.com.tw/" target="_self" style="font-size:4vh">康健雜誌 </a>
+                    </div>
+                    <div class="col-md-4">
+                        <label style="font-size:4vh;">生活</label><br />
+                        <img alt="生活" height="300px" src="images/logo/sourcelink_002.png" /><br /><br />
+                        <a href="https://www.facebook.com/OriginLivingWorkshop/" target="_self" style="font-size:4vh">有本生活坊 </a>
+                    </div>
+                    <div class="col-md-4">
+                        <label style="font-size:4vh;">學習</label><br />
+                        <img alt="學習" height="300px" src="images/logo/sourcelink_003.png" /><br /><br />
+                        <a href="http://moe.senioredu.moe.gov.tw/HomeSon/Taichung/TaichungIndex" target="_blank" style="font-size:4vh">臺中市樂齡學習網 </a><br />
+                        <a href="https://www.iaci.nkfust.edu.tw/Industry/index.aspx" target="_blank" style="font-size:4vh">教育部產學合作資訊網 </a><br />
+                        <a href="http://usr.moe.gov.tw/" target="_blank" style="font-size:4vh">教育部大學社會責任推動中心 </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+
+    <section id="contact" class="section-wrapper contact-section" data-stellar-background-ratio="0.5">
+        <div class="parallax-overlay"></div>
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">聯絡我們</span></h2>
+
+                    <!--<p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1"></p>-->
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label style="font-size:3vh;">臉書粉絲專頁</label><br /><br />
+                        <a href="https://www.facebook.com/thuusr/" target="_blank" style="font-size:2vh"><img alt="臉書粉絲專頁" height="300px" src="images/logo/contact_001.png" /><br /><br /></a>
+                    </div>
+                    <div class="col-md-6">
+                        <label style="font-size:3vh;">樂齡生活與科技創新中心電子郵件</label><br /><br />
+                        <img alt="樂齡生活與科技創新中心電子郵件" height="240px" src="images/logo/contact_002.png" /><br /><br />
+                        <label style="font-size:2vh;">thucaati@gmail.com</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="contact-details">
+
+
+                        <!-- Contact Form -->
+                        <div class="contact-form wow bounceInRight">
+
+                            <!--NOTE: Update your email Id in "contact_me.php" file in order to receive emails from your contact form-->
+                            <form name="sentMessage" id="contactForm" novalidate>
+                                <div class="row" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">
+                                    <div class="col-md-2">
+                                        <label style="font-size:2vh;color:red;">*</label>
+                                        <label style="font-size:2vh;">發問人姓名</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input id="name" type="text" class="form-control" data-validation-required-message="請輸入姓名" />
+                                    </div>
+                                </div>
+                                <br /><br />
+                                <div class="row" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">
+                                    <div class="col-md-2">
+                                        <label style="font-size:2vh;color:red;">*</label>
+                                        <label style="font-size:2vh;">性別</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select id="sex" class="form-control">
+                                            <option>請選擇性別</option>
+                                            <option>男性</option>
+                                            <option>女性</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br /><br />
+                                <div class="row" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">
+                                    <div class="col-md-2">
+                                        <label style="font-size:2vh;color:red;">*</label>
+                                        <label style="font-size:2vh;">聯絡電話</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input id="tel" type="text" class="form-control" data-validation-required-message="請輸入聯絡電話" />
+                                    </div>
+                                </div>
+                                <br /><br />
+                                <div class="row" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">
+                                    <div class="col-md-2">
+                                        <label style="font-size:2vh;color:red;">*</label>
+                                        <label style="font-size:2vh;">電子郵件</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input id="email" type="email" class="form-control" data-validation-required-message="請輸入電子郵件" />
+                                    </div>
+                                </div>
+                                <br /><br />
+                                <div class="row" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">
+                                    <div class="col-md-2">
+                                        <label style="font-size:2vh;color:red;">*</label>
+                                        <label style="font-size:2vh;">問題或建議</label><br />
+                                        <label style="font-size:2vh;">(限</label>
+                                        <label style="font-size:2vh;color:red;">1000</label>
+                                        <label style="font-size:2vh;">個字)</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <textarea rows="6" class="form-control" id="message" required
+                                                  data-validation-required-message="Please enter your message" minlength="5"
+                                                  data-validation-minlength-message="Min 5 characters"
+                                                  maxlength="999" style="resize:none"></textarea>
+                                    </div>
+                                </div>
+                                <br /><br />
+                                <div class="row">
+                                    <div class="col-md-2" style="font-size:2vh;font-family:Verdana, Geneva, sans-serif, '微軟正黑體';">驗證碼：</div>
+                                    <div class="col-md-1"><input type="text" class="form-control" id="setcode" name="createcode" maxlength="4" /></div>
+                                    <div class="col-md-1">
+                                        <canvas id="myCanvas" width="70px" height="27px" style="border:1px solid #d3d3d3;"></canvas>
+                                        <br /><a href="javascript:createCode()">更換驗證碼</a>
+                                    </div>
+                                    <input id="anscode" type="hidden" />
+                                </div>
+                                <div class="col-md-4 col-md-offset-5" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">
+                                    <br>
+                                    <!--<button id="send" class="btn btn-primary" onclick="checkcode()">送出訊息</button>-->
+                                    <!--<input id="send" type="submit" class="btn btn-primary" onclick="checkcode()" value="送出訊息" />-->
+                                    <a href="javascript:checkcode()" class="btn btn-primary">送出訊息</a>
+                                </div>
+                                <div id="TEXT" style="display:none"></div>
+                            </form>
+                        </div>
+                        <script>
+                            createCode();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+
+        <div class="container">
+            <div class="row">
+                <div class="footer-containertent">
+                    <p>Copyright &copy; 2018.<span style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'">東海大學<a target="_blank" href="#">版權所有</a></span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.magnific-popup.js" type="text/javascript"></script>
+    <script src="js/jquery.swipebox.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.scrollUp.min.js"></script>
+    <script src="js/jquery.easypiechart.js"></script>
+    <script src="js/isotope.pkgd.min.js"></script>
+    <script src="js/jquery.fitvids.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script src="js/jquery.nav.js"></script>
+    <script src="js/imagesloaded.pkgd.min.js"></script>
+    <script src="js/smooth-scroll.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/jquery.sliderPro.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="contact/jqBootstrapValidation.js"></script>
+    <script src="contact/contact_me.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/ShowDetail.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>東海大學USR—青銀共創‧樂齡樂活資訊平台</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="elegant_font/style.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/slider-pro.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/owl.theme.css">
+    <link rel="stylesheet" href="css/owl.transitions.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="elegant_font/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="ShowDetail.js"></script>
+    <script>
+        var PartnerTitle = {
+            '001': '2018.05.18中華基金會揭牌儀式',
+            '002': '2018.06.16、2018.06.23教育研究所-高齡專題演講',
+            '003': '2018.06.23福瑞社區結業式活動',
+            '004': '2018.07.03銀髮族營養與廚藝講座',
+            '005': '2018.06.01銀髮科技新樂園-青銀行動車創意徵稿競賽'
+        }
+        var PartnerMemo = {
+            '001': '樂活長照巷弄服務站開幕',
+            '002': '辦理樂齡教育議題-台灣樂齡學習系列、教學科技議題等高齡化議題工作坊。',
+            '003': '福瑞社區從今年四月到六月，在東海大學育成中心參與學校師生安排規劃的銀髮族相關課程，福瑞的長者們相當積極參與，除了讓東海大學師生有機會提供優質課程給長者之外，透過活動更促進長輩們的身心健康，活躍晚年且提升生活品質。因此，福瑞社區理事長與餐飲系李老師規劃在6月23日星期六，為長輩們辦理一場結業活動，希望長者們可以體驗大學畢業的氛圍。',
+            '004': '本活動將邀請社區志工，透過講座課程了解適合銀髮族的菜單，並透過示範教學與實作，讓參與者能學會如何大量準備菜餚，使料理功夫更精進。',
+            '005': '生活科技化無處不在！服務電子化、雲端化已是這個時代的生活日常。我們期待「青銀行動車」不僅提供社區服務，更希望可以結合科技產業，達到蒐集健康資訊、互動式衛教教學、遠端連線資訊共享等目的。對高齡社區服務有一點點興趣的大小夥伴們，不要遲疑！趕快一起來為「青銀行動車」設計銀髮科技服務，為樂齡生活注入更多科技元素。'
+        }
+        var PartnerWeb = {
+            '101': '',
+        }
+
+        var url = location.href;
+        var id = "";
+        //再來用去尋找網址列中是否有資料傳遞(QueryString)
+        if (url.indexOf('?') != -1) {
+
+            //在此直接將各自的參數資料切割放進ary中
+            var ary = url.split('?')[1].split('&');
+            //下迴圈去搜尋每個資料參數
+            for (i = 0; i <= ary.length - 1; i++) {
+                //如果資料名稱為id的話那就把他取出來
+                if (ary[i].split('=')[0] = 'id')
+                    id = ary[i].split('=')[1];
+            }
+        }
+        function SetDetail() {
+            document.getElementById('img1').alt = PartnerTitle[id];
+            document.getElementById('img1').src = "images/detail/newsdetail_" + id + ".png";
+            document.getElementById('title1').innerText = PartnerTitle[id];
+
+            document.getElementById("memo").innerText = PartnerMemo[id];
+
+            //document.getElementById('weblink').href = PartnerWeb[id];
+            //document.getElementById("weblink").innerText = "網站：" + PartnerWeb[id];
+        }
+    </script>
+</head>
+<body style="background-color: white;">
+    <header>
+        <!-- Navigation Menu start-->
+
+        <nav id="topNav" class="navbar navbar-default main-menu">
+            <a class="navbar-brand page-scroll" href="index.html" style="margin-right:0 !important;"><img src="images/logo/mainlogo.png" alt="東海大學" style="margin-top: 0 !important; height:90px;"></a>
+            <div class="container">
+                <button class="navbar-toggler hidden-md-up pull-right" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+                    ☰
+                </button>
+                <div class="collapse navbar-toggleable-md" id="collapsingNavbar">
+                    <ul class="nav navbar-nav" style="font-family: sans-serif; font-size: 12px;">
+                        <li>
+                            <a target="_self" href="index.html#introduction">USR介紹</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#partner">夥伴介紹</a>
+                        </li>
+                        <li class="active">
+                            <a target="_self" href="index.html#news">最新消息</a>
+                        </li>
+
+                        <!--<li>
+                            <a target="_self" href="index.html#event">最新活動</a>
+                        </li>-->
+                        <li>
+                            <a target="_self" href="index.html#achieve">成果與紀錄</a>
+                        </li>
+                        <!--<li>
+                            <a target="_self" href="index.html#board">公告事項</a>
+                        </li>-->
+
+                        <li>
+                            <a target="_self" href="index.html#rule">法規查詢</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#chart">表單下載</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#elderlyarea">東海樂齡專區</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#sourcelink">高齡資源網站連結</a>
+                        </li>
+                        <li>
+                            <a target="_self" href="index.html#signup">線上報名</a>
+                        </li>
+                        <li>
+                            <a href="index.html#contact">聯絡我們</a>
+                        </li>
+                        <li>
+                            <a href="AdminLogin.html">管理者登入</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="margin:0;padding:0;border-color:silver;" />
+        </nav>
+    </header>
+    <section class="section-wrapper" style="background-color: silver; padding-top:5em !important;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 section-header wow fadeInDown" style="background-color:white;height:700px;">
+                    <h2><span class="highlight-text" style="font-family:Verdana, Geneva, sans-serif, '微軟正黑體'; font-weight:bold; font-size: 5vh !important;">最新消息</span></h2>
+                    <p class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                        <table width="100%" cellspacing="0" cellpadding="10" style="font-family:微軟正黑體;">
+                            <tr>
+                                <td rowspan="3" width="30%" height="400px" valign="top"><img id="img1" width="300px" alt="DEMO" src="images/detail/Demo.png" /></td>
+                                <td align="left" height="15%"><label id="title1" style="font-size:3vh">TITLE</label></td>
+                            </tr>
+                            <tr>
+                                <td align="left" valign="top"><label id="memo" style="font-size:2vh">DEMO</label></td>
+                            </tr>
+                            <!--<tr>
+                                <td align="left"><a id="weblink" target="_blank" href="#" style="font-size:2vh">WEB</a></td>
+                            </tr>-->
+                        </table>
+                        <script>
+                            SetDetail();
+                        </script>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

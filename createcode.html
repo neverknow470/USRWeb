@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script>
+        function createCode() {
+            code = "";
+            var codeLength = 4;
+            var canvas = document.getElementById('myCanvas');
+            var selectChar = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);//所有候选组成验证码的字符
+
+            for (var i = 0; i < codeLength; i++) {
+                var charIndex = Math.floor(Math.random() * 10);
+                code += selectChar[charIndex];
+            }
+            if (canvas) {
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, 70, 27);
+                ctx.font = "20px arial";
+
+                var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                gradient.addColorStop("0", "darkblue");
+                gradient.addColorStop("1", "blue");
+
+                ctx.strokeStyle = gradient;
+                ctx.strokeText(code, 5, 20);
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas" width="70px" height="27px" style="border:1px solid #d3d3d3;"></canvas>
+    <script>createCode();</script>
+</body>
+</html>
