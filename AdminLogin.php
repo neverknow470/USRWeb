@@ -22,6 +22,14 @@
 
 </head>
 <body style="background-color: white;">
+<script>
+    if (<?php isset($_SESSION["Login"])?>){
+        if (<?php $_SESSION["Login"]?>=="Y"){
+            document.getElementById('logindiv').style.display = "none";
+            document.getElementById('maindiv').style.display = "block";
+        }
+    }
+</script>
     <section>
         <div class="row">
             <div class="col-md-5"><a href="MainPage.html" style="margin-right:0 !important;"><img src="images/logo/mainlogo.png" alt="東海大學" style="margin-top: 0 !important; height:90px;"></a></div>
@@ -74,7 +82,6 @@
                                         活動名稱：<input id="eventname" /><br /><br />
                                         活動網址：<input id="eventurl" /><br /><br />
                                         <a class="btn btn-primary" href="javascript:eventadd()">新增</a>
-                                        <a class="btn btn-primary" target="_blank" href="upload.php">NEW</a>
                                     </div>
                                     <br /><br /><br />
                                     <div class="row" style="text-align:center;font-size:3vh;">

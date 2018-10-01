@@ -37,6 +37,11 @@ function checkpass() {
         geteventdata();
         document.getElementById('USRID').value = "";
         document.getElementById('USRPASS').value = "";
+        $.ajax({
+            type : 'POST',
+            url :  'SetSession.php',
+            data: { SessionName: "Y" }
+    });
     }
     else {
         document.getElementById('USRPASS').value = "";
